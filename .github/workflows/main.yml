@@ -2,7 +2,6 @@ name: Web E2E Tests
 
 on: 
   workflow_dispatch:
-	
 jobs:
   e2e-tests:
     runs-on: ubuntu-latest
