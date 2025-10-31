@@ -21,4 +21,3 @@ jobs:
     # executando os testes
     - name: Executando os testes
       run: npx cypress run
-	
