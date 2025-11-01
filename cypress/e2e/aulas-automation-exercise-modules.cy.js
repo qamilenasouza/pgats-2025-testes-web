@@ -1,16 +1,22 @@
 /// <reference types="cypress"/>
 
 import userData from '../fixtures/example.json'
+import {
+    getRandomNumber,
+    getRandomEmail
+} from '../support/helpers'
+
 import menu from '../modules/menu';
 import login from '../modules/login';
 import cadastro from '../modules/cadastro'
+import produto from '../modules/produto';
+import contato from '../modules/contato';
 
 describe('Automation Excercise', () => {
     beforeEach(() => {
         
         cy.viewport('iphone-xr')
-        cy.visit('https://automationexercise.com/')
-        cy.navegarParaLogin()
+        cy.visit('https://automationexercise.com/')     
     });
 
     it('Exemplos de Logs', () => {
@@ -30,12 +36,12 @@ describe('Automation Excercise', () => {
 
     it('Test Case 1: Register User/Cadastrar um usuário', () => {
         
-        // Arrange
-        login.preencherFormularioDePreCadastro()
+        menu.navegarParaLogin()
+        login.preencherFormularioDePreCadastro(userData.name, )
         cadastro.preencherFormularioDeCadastroCompleto()
                   
         // Assert
-        cy.url('').should('includes', 'account_created')
+        cy.url().should('includes', 'account_created')
         cy.contains('b', 'Account Created!')
         cy.get('h2[data-qa="account-created"]').should('have.text', 'Account Created!')
     });
@@ -43,15 +49,12 @@ describe('Automation Excercise', () => {
    
     it('Test Case 2: Login User with correct email and password/Login de Usuário com email e Senha corretos', () => {
 
+        menu.navegarParaLogin()
         login.preencherFormularioDeLogin(userData.user, userData.password)
 
+        // Assert
         cy.get('i.fa-user').parent().should('contain', userData.name)
         cy.get('a[href="/logout"]').should('be.visible')
-        
-        cy.get(':nth-child(10) > a')
-            .should('be.visible')
-            .and('have.text', `Logged in as ${userData.name}`);
-
         cy.contains('b', userData.name)
         cy.contains(`Logged in as ${userData.name}`).should('be.visible')
 
@@ -59,12 +62,16 @@ describe('Automation Excercise', () => {
 
     it('Test Case 3: Login User with incorrect email and password/Login de Usuário com email e senha incorretos', () => {
 
+        menu.navegarParaLogin()
         login.preencherFormularioDeLogin(userData.user, '54321')
+        
+        // Assert
         cy.get('.login-form > form > p').should('contain', 'Your email or password is incorrect!')
     });
 
     it('Test Case 4: Logout User/Logout de Usuário', () => {
       
+        menu.navegarParaLogin()
         login.preencherFormularioDeLogin(userData.user, userData.password)
         menu.efetuarLogout()
 
@@ -75,30 +82,57 @@ describe('Automation Excercise', () => {
         cy.get('a[href="/login"]').should('contain', 'Signup / Login')
     });
 
-    it('Test Case 5: Register User with existing email/Cadastrar usuário com email existente', () => {
-      
-        cy.get('[data-qa="signup-name"]').type('QA Tester')
-        cy.get('[data-qa="signup-email"]').type('qa-tester1761257693752@test.com')
-        cy.contains('button', 'Signup').click()
-        cy.get('.signup-form > from > p').should('contain', 'Email Address already exist')
+    it('Failed-Test Case 5: Register User with existing email/Cadastrar usuário com email existente', () => {
+        
+        menu.navegarParaLogin()
+        login.preencherFormularioDePreCadastro(userData.name, getRandomEmail())
+        
+        
+        //Assert
+        cy.contains('Email Address already exist!')
     });
 
     it('Test Case 6: Contact Us Form/Enviar um formulário de contato com upload de arquivo', () => {
         
-        cy.get('a[href*=contact]').click()
-        cy.get('[data-qa="name"]').type(userData.name)
-        cy.get('[data-qa="email"]').type(userData.email)
-        cy.get('[data-qa="subject"]').type(userData.subject)
+        contato.preencherFormularioDeContato()
 
-        cy.fixture('example.json').as('arquivo')
-        cy.get('input[type=file]').selectFile('@arquivo')
-
-        cy.get('[data-qa="submit-button"]').click()
-
+        // Assert
         cy.get('.status').should('be.visible')
         cy.get('.status').should('have.text', 'Success! Your details have been submitted successfully.')
 
     });
 
+    it('Test Case 8: Verify All Products and product detail page/Visualizar todos os produtos e a Página de Detalhes', () => {
+        
+        menu.navegarParaProdutos()
+        produto.verProduto()
+
+        // Assert
+        cy.contains('button', 'Add to cart')
+    });
+
+    it('Test Case 9: Search Product/Buscar Produto', () => {
+
+        menu.navegarParaProdutos()
+        produto.buscarProduto()
+
+        // Assert
+        cy.get('h2.title.text-center').should('have.text', 'Searched Products')
+
+    });
+
+    it('Test Case 10: Verify Subscription in home page/Se inscrever para receber notificações utilizando email', () => {
+        
+        contato.inscricaoParaNotificacoes(userData.email)
+
+        // Assert
+        cy.contains('You have been successfully subscribed!')
+    });
+
+    it('Test Case 15: Place Order: Register before Checkout/Fazer Pedido e Registrar usuário antes de fazer finalizar a compra', () => {
+
+
+
+    });
 
 });

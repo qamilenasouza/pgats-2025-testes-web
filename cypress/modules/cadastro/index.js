@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker"
-
 class Cadastro {
+    
     preencherFormularioDeCadastroCompleto() {
 
         const firstName = faker.person.firstName()
@@ -27,7 +27,8 @@ class Cadastro {
         cy.get('[data-qa="zipcode"]').type(faker.location.zipCode())
         cy.get('[data-qa="mobile_number"]').type('111 222 333')
         
-        // Act 
-        cy.get('[data-qa="create-account"]').click()
+        cy.get('[data-qa="create-account"]').should('be.visible').click()
     }
 }
+
+export default new Cadastro()

@@ -20,4 +20,14 @@ jobs:
 
     # executando os testes
     - name: Executando os testes
-      run: npx cypress run
+      run: npx cypress run --spec "cypress/e2e/trabalho-final.cy.js"
+
+    - uses: actions/upload-artifact@v4
+      if: ${{ !cancelled()}}
+      with:
+        name: relatorios
+        path: | 
+          cypress/reports
+          cypress/screenshots
+          cypress/videos
+    
