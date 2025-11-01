@@ -1,7 +1,12 @@
-name: Web E2E Tests
+name: Web E2E Tests - Trabalho final 
 
 on: 
   workflow_dispatch:
+  push:
+     branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
 jobs:
   e2e-tests:
     runs-on: ubuntu-latest
